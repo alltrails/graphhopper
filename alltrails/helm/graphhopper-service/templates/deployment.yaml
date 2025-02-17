@@ -12,6 +12,22 @@ spec:
   strategy: {}
   template:
     metadata:
+      annotations:
+        prometheusMetrics: |
+          {
+            "openmetrics": {
+              "instances": [
+                {
+                  "openmetrics_endpoint": "http://%%host%%:%%port%%/metrics",
+                  "metrics": [
+                    "jvm_*",
+                    "process_*"
+                    "system__*"
+                  ]
+                }
+              ]
+            }
+          }
       labels:
         {{- include "graphhopper-service.selectorLabels" . | nindent 8 }}
     spec:
