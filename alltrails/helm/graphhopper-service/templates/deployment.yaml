@@ -22,7 +22,7 @@ spec:
                   "metrics": [
                     "jvm_*",
                     "process_*"
-                    "system__*"
+                    "system_*"
                   ]
                 }
               ]
