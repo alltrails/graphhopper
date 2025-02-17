@@ -330,6 +330,7 @@ public class GraphHopperBundle implements ConfiguredBundle<GraphHopperBundleConf
         environment.healthChecks().register("graphhopper", new GraphHopperHealthCheck(graphHopper));
         environment.jersey().register(environment.healthChecks());
         environment.jersey().register(HealthCheckResource.class);
+        environment.jersey().register(new MetricsResource());
 
         if (configuration.gtfsrealtime().getFeeds().isEmpty()) {
             environment.jersey().register(new AbstractBinder() {
