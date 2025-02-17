@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       annotations:
-        prometheusMetrics: |
+        ad.datadoghq.com/graphhopper-service.checks: |
           {
             "openmetrics": {
               "instances": [
