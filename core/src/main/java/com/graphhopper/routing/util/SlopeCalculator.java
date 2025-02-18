@@ -11,12 +11,16 @@ import com.graphhopper.util.PointList;
 public class SlopeCalculator implements TagParser {
     private final DecimalEncodedValue maxSlopeEnc;
     private final DecimalEncodedValue averageSlopeEnc;
+    private final DecimalEncodedValue atGainPercentEnc;
     // the elevation data fluctuates a lot and so the slope is not that precise for short edges.
     private static final double MIN_LENGTH = 8;
+    // To minimize effect of minor elevation fluctuations, elevation has to move by more than 3m to be added to gain or loss
+    private static final double MIN_ELEVATION_CHANGE = 3;
 
-    public SlopeCalculator(DecimalEncodedValue max, DecimalEncodedValue averageEnc) {
+    public SlopeCalculator(DecimalEncodedValue max, DecimalEncodedValue averageEnc, DecimalEncodedValue atGainPercent) {
         this.maxSlopeEnc = max;
         this.averageSlopeEnc = averageEnc;
+        this.atGainPercentEnc = atGainPercent;
     }
 
     @Override
@@ -28,6 +32,8 @@ public class SlopeCalculator implements TagParser {
                     maxSlopeEnc.setDecimal(false, edgeId, edgeIntAccess, 0);
                 if (averageSlopeEnc != null)
                     averageSlopeEnc.setDecimal(false, edgeId, edgeIntAccess, 0);
+                if (atGainPercentEnc != null)
+                    atGainPercentEnc.setDecimal(false, edgeId, edgeIntAccess, 0);
                 return;
             }
             // Calculate 2d distance, although pointList might be 3D.
@@ -79,6 +85,32 @@ public class SlopeCalculator implements TagParser {
 
                 double val = Math.max(maxSlope, maxSlopeEnc.getMinStorableDecimal());
                 maxSlopeEnc.setDecimal(false, edgeId, edgeIntAccess, Math.min(maxSlopeEnc.getMaxStorableDecimal(), val));
+            }
+
+            if (atGainPercentEnc != null) {
+                double gain = 0, loss = 0, lastUsedElev = pointList.getEle(0);
+                for (int i = 1; i < pointList.size(); i++) {
+                    if (i > 1) {
+                        if (pointList.getEle(i) > lastUsedElev + MIN_ELEVATION_CHANGE) {
+                            gain += pointList.getEle(i) - lastUsedElev;
+                            lastUsedElev = pointList.getEle(i);
+                        }
+                        else if (pointList.getEle(i) < lastUsedElev - MIN_ELEVATION_CHANGE) {
+                            loss += lastUsedElev - pointList.getEle(i);
+                            lastUsedElev = pointList.getEle(i);
+                        }
+                    }
+                }
+
+                if (gain > 0) {
+                    double atGainPercent = calcSlope(gain, distance2D);
+                    atGainPercentEnc.setDecimal(false, edgeId, edgeIntAccess, Math.min(atGainPercentEnc.getMaxStorableDecimal(), atGainPercent));
+                }
+                // Loss in the segment's forward direction is stored as gain for the reverse direction
+                if (loss > 0) {
+                    double atLossPercent = calcSlope(loss, distance2D);
+                    atGainPercentEnc.setDecimal(true, edgeId, edgeIntAccess, Math.min(atGainPercentEnc.getMaxStorableDecimal(), atLossPercent));
+                }
             }
         }
     }
