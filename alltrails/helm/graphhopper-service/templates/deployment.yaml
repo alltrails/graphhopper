@@ -7,7 +7,9 @@ metadata:
         "openmetrics": {
           "instances": [
             {
-              "openmetrics_endpoint": "http://%%host%%:8989/metrics"
+              "openmetrics_endpoint": "http://%%host%%:8989/metrics",
+              "namespace": "graphhopper-service",
+              "metrics": [".*"]
             }
           ]
         }
