@@ -50,6 +50,11 @@ affinity: {}
 
 additionalVolumeMounts: {}
 
+datadog:
+  prometheusScrape:
+    enabled: true
+    serviceEndpoints: true
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
