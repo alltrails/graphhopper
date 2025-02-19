@@ -1,0 +1,4 @@
+awsAccount: "434355312983"
+
+datadog:
+  environment: production
