@@ -1,18 +1,25 @@
-replicaCount: 1
-
 image:
-  repository: 873326996015.dkr.ecr.us-west-2.amazonaws.com/graphhopper-service
   pullPolicy: Always
   tag: "graphhopper-service"
+
+replicaCount: 1
+
+autoscaling:
+  enabled: true
+  minReplicas: 4
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 80
+
+resources:
+  limits:
+    memory: 12G
+  requests:
+    cpu: "0.5"
+    memory: 12G
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-serviceAccount:
-  create: false
-  annotations: {}
-  name: ""
 
 podAnnotations: {}
     
@@ -28,7 +35,7 @@ ingress:
   className: ""
   annotations: {}
   hosts:
-    - host: chart-example.local
+    - host: graphhopper-service.local
       paths:
         - path: /
           pathType: ImplementationSpecific
@@ -42,3 +49,12 @@ tolerations: []
 affinity: {}
 
 additionalVolumeMounts: {}
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""

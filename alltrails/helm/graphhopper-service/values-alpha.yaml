@@ -1,24 +1,4 @@
 awsAccount: "873326996015"
-railsEnv: alpha
-
-resources:
-  limits:
-    memory: 2G
-  requests:
-    cpu: "0.5"
-    memory: 2G
-
-autoscaling:
-  enabled: true
-  minReplicas: 4
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
-
-additionalVolumes: {}
-
-externalSecret:
-  namespace: alpha
-  ssmKey: alpha/graphhopper-service/credentials
 
 datadog:
   environment: alpha

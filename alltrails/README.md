@@ -79,8 +79,22 @@ Upload all 10 files from local data/default-gh folder to default-gh folder in S3
 Then restart containers with new data (or use this after image change in ECR)
 
 ```Bash
-kubectl rollout restart deploy graphhopper-service-tester
+kubectl rollout restart deploy graphhopper-service
 kubectl get pods | grep graphhopper
+```
+
+6. Updating the deployment
+
+The deployment is managed by helm, but not yet in an automated pipeline.
+
+After editing the template files you can check your work with:
+```Bash
+helm template ./alltrails/helm/graphhopper-service --values "./alltrails/helm/graphhopper-service/values-alpha.yaml" --set "region=us-west-2"
+```
+
+Then update the deployment:
+```Bash
+helm upgrade --install "graphhopper-service" alltrails/helm/graphhopper-service --namespace alpha --wait --timeout 10m --atomic --debug --values alltrails/helm/graphhopper-service/values-alpha.yaml --set image.tag=<CURRENT_IMAGE_TAG> --set region=us-west-2
 ```
 
 ## Interactive map service URLs
