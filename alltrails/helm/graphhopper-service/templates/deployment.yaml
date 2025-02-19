@@ -20,12 +20,7 @@ spec:
             "openmetrics": {
               "instances": [
                 {
-                  "openmetrics_endpoint": "http://%%host%%:%%port%%/metrics",
-                  "metrics": [
-                    "jvm_*",
-                    "process_*"
-                    "system_*"
-                  ]
+                  "openmetrics_endpoint": "http://%%host%%:8989/metrics"
                 }
               ]
             }
