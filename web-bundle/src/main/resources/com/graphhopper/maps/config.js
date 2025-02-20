@@ -1,5 +1,5 @@
 const config = {
-    routingApi: location.origin + (location.host == 'alpha.mostpaths.com' ? '/api/alltrails/graphhopper-service/' : '/'),
+    routingApi: location.origin + ((location.host === 'alpha.mostpaths.com' || location.host === 'www.alltrails.com') ? '/api/alltrails/graphhopper-service/' : '/'), // Localhost does not want the extra pathing.
     geocodingApi: '',
     defaultTiles: 'OpenStreetMap',
     keys: {

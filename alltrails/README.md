@@ -68,7 +68,7 @@ kubectl config set-context --current --namespace=alpha # no need to then add -n 
 docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 873326996015.dkr.ecr.us-west-2.amazonaws.com
 
 # Build/push
-alltrails/scripts/build_linux_graphhopper.sh
+alltrails/scripts/build_and_push_alpha.sh
 # See below for restarting service with new image
 ```
 
@@ -89,12 +89,12 @@ The deployment is managed by helm, but not yet in an automated pipeline.
 
 After editing the template files you can check your work with:
 ```Bash
-helm template ./alltrails/helm/graphhopper-service --values "./alltrails/helm/graphhopper-service/values-alpha.yaml" --set "region=us-west-2"
+helm template ./alltrails/helm/graphhopper-service --values "./alltrails/helm/graphhopper-service/<VALUES>.yaml" --set "region=us-west-2"
 ```
 
 Then update the deployment:
 ```Bash
-helm upgrade --install "graphhopper-service" alltrails/helm/graphhopper-service --namespace alpha --wait --timeout 10m --atomic --debug --values alltrails/helm/graphhopper-service/values-alpha.yaml --set image.tag=<CURRENT_IMAGE_TAG> --set region=us-west-2
+helm upgrade --install "graphhopper-service" alltrails/helm/graphhopper-service --namespace <NAMESPACE> --wait --timeout 10m --atomic --debug --values alltrails/helm/graphhopper-service/<VALUES>.yaml --set image.tag=graphhopper-service --set region=us-west-2
 ```
 
 ## Interactive map service URLs
