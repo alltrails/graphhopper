@@ -1,19 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    ad.datadoghq.com/graphhopper-service.checks: |
-      {
-        "openmetrics": {
-          "instances": [
-            {
-              "openmetrics_endpoint": "http://%%host%%:8989/metrics",
-              "namespace": "graphhopper-service",
-              "metrics": [".*"]
-            }
-          ]
-        }
-      }
   name: {{ include "graphhopper-service.fullname" . }}
   labels:
     {{- include "graphhopper-service.labels" . | nindent 4 }}
@@ -27,6 +14,19 @@ spec:
   strategy: {}
   template:
     metadata:
+      annotations:
+        ad.datadoghq.com/graphhopper-service.checks: |
+          {
+            "openmetrics": {
+              "instances": [
+                {
+                  "openmetrics_endpoint": "http://%%host%%:8989/metrics",
+                  "namespace": "graphhopper-service",
+                  "metrics": [".*"]
+                }
+              ]
+            }
+          }
       labels:
         {{- include "graphhopper-service.selectorLabels" . | nindent 8 }}
     spec:
