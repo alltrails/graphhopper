@@ -50,7 +50,7 @@ This method also does not currently support the `datareader.at_csv` import
 
 ```Bash
 rm -r alltrails/data/default-gh
-docker run --rm -p 8989:8989 -v ./alltrails/data:/graphhopper/data graphhopper-service --import -i /graphhopper/data/california-latest.osm.pbf
+docker run --rm -p 8989:8989 -v ./alltrails/data:/graphhopper/data graphhopper-service --import -i /graphhopper/data/berlin-latest.osm.pbf
 ```
 
 3. Run Docker container locally as a server, http://localhost:8989/maps/

@@ -1,0 +1,4 @@
+awsAccount: "873326996015"
+
+datadog:
+  environment: alpha

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "graphhopper-service-importer.fullname" . }}
+  labels: {{- include "graphhopper-service-importer.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      name: http
+  selector:
+    {{- include "graphhopper-service-importer.selectorLabels" . | nindent 4 }}
