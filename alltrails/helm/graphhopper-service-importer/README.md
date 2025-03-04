@@ -176,6 +176,12 @@ Sometimes CGAIR takes a long time to respond with elevation data.
 We have set the timeout very high and added retries, but it's still possible to timeout here if CGAIR is struggling.
 Unfortunately, this error will require the job to be restarted.
 
+___
+
+`Failed to schedule pod, incompatible with nodepool "default"`
+
+You might see this error when running `kubectl describe pod <POD_NAME>`. This job is asking for a ton of memory. The nodepool needs to be configured to allow large instances.
+
 # Implementation Notes
 
 ## s3 Data storage
