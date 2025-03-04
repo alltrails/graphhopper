@@ -1,0 +1,57 @@
+image:
+  pullPolicy: Always
+  tag: "graphhopper-service-importer"
+
+replicaCount: 1
+
+autoscaling:
+  enabled: false
+
+resources:
+  limits:
+    memory: 192G
+  requests:
+    cpu: "1"
+    memory: 192G
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+    
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8989
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: graphhopper-service-importer.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+additionalVolumeMounts: {}
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
