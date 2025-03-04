@@ -58,6 +58,11 @@ The `byot_custom_routing_weights.csv` is put together by DSAE and contains the A
 It needs to be in the same directory as `planet-latest.osm.pbf`.
 Ensure this file exists and that it is the latest version from DSAE. Their pipeline automatically updates this file and overwrites the old one.
 
+Rename this file to `planet-latest.osm.pbf.csv`:
+```bash
+aws s3 mv s3://alltrails-production-us-west-2-graphhopper-service/byot_custom_routing_weights.csv s3://alltrails-production-us-west-2-graphhopper-service/planet-latest.osm.pbf.csv
+```
+
 ## Build and Push the Importer Image
 
 Login to docker:
@@ -141,6 +146,11 @@ kubectl config use-context --current --namespace=production
 Copy the imported data into production:
 ```bash
 aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/import-data
+```
+
+Copy the latest AllTrails custom attributes to production:
+```bash
+aws s3 cp s3://alltrails-alpha-us-west-2-graphhopper-service/planet-latest.osm.pbf.csv s3://alltrails-production-us-west-2-graphhopper-service/planet-latest.osm.pbf.csv
 ```
 
 Rename the current default-gh folder. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
