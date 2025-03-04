@@ -15,7 +15,7 @@ In order to run this job, you will need to be familiar with our [SRE toolchain](
 
 ## Process Overview
 
-This is a long-running job that can take TODO: <A_LONG_TIME> to complete. It uses OSM data that is publicly available from AWS to generate the files graphhopper needs to calculate routes.
+This is a long-running job that can take more than 30 hours to complete. It uses OSM data that is publicly available from AWS combined with AllTrails custom routing weights to generate the files graphhopper needs to calculate routes.
 
 This job only needs to run in alpha. The output data is the same in all environments, so it can simply be copied to prod and other regions.
 
@@ -23,14 +23,15 @@ This job only needs to run in alpha. The output data is the same in all environm
 
 There are several steps needed to complete an import:
 1. [Copy the planet-latest.osm.pbf file from aws to ensure we are using the latest version](#copy-the-planet-latestosmpbf-file-from-aws)
-2. [Build and push the importer image](#build-and-push-the-importer-image)
-3. [Start the job in k8s](#start-the-job-in-k8s)
-4. [When the job is complete delete it from k8s](#delete-the-completed-job-in-k8s)
-5. [Ensure the imported files look correct](#ensure-imported-files-look-correct)
-5. [Rename the folders in s3 so new deployments will use the new data](#rename-the-s3-folders)
-6. [Restart the alpha deployment](#restart-alpha-deployment)
-7. [Spot check alpha to ensure the routing requests work as expected](#verify-alpha-deployment)
-8. Copy the imported data to prod and repeat steps 5-7
+2. [Copy the planet-latest.osm.pbf.csv file from DSAE](#ensure-we-have-the-latest-byot_custom_routing_weightscsv)
+3. [Build and push the importer image](#build-and-push-the-importer-image)
+4. [Start the job in k8s](#start-the-job-in-k8s)
+5. [When the job is complete delete it from k8s](#delete-the-completed-job-in-k8s)
+6. [Ensure the imported files look correct](#ensure-imported-files-look-correct)
+7. [Rename the folders in s3 so new deployments will use the new data](#rename-the-s3-folders)
+8. [Restart the alpha deployment](#restart-alpha-deployment)
+9. [Spot check alpha to ensure the routing requests work as expected](#verify-alpha-deployment)
+10. [Copy the imported data to prod and repeat steps 5-7](#update-prod-data)
 
 ## Copy the planet-latest.osm.pbf file from aws
 
@@ -50,6 +51,12 @@ Copy the file from aws to our own s3 bucket. This is a large file and it can tak
 ```bash
 aws s3 cp s3://osm-pds/planet-latest.osm.pbf s3://alltrails-alpha-us-west-2-graphhopper-service
 ```
+
+## Ensure we have the latest byot_custom_routing_weights.csv
+
+The `byot_custom_routing_weights.csv` is put together by DSAE and contains the AllTrails custom routing weights.
+It needs to be in the same directory as `planet-latest.osm.pbf`.
+Ensure this file exists and that it is the latest version from DSAE. Their pipeline automatically updates this file and overwrites the old one.
 
 ## Build and Push the Importer Image
 
@@ -124,8 +131,35 @@ The easiest way to spot check the deployment is by making some requests in the [
 
 ## Update Prod Data
 
-TODO: How to copy s3 between accounts?
+Update aws-cli and kube to use the production account:
+```bash
+export AWS_PROFILE=root
+kubectl config use-context arn:aws:eks:us-west-2:434355312983:cluster/alltrails-production
+kubectl config use-context --current --namespace=production
+```
 
+Copy the imported data into production:
+```bash
+aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/import-data
+```
+
+Rename the current default-gh folder. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
+```bash
+timestamp=$(date +%s)
+aws s3 --recursive mv s3://alltrails-production-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/default-gh-$timestamp
+```
+
+Rename to new data to default-gh
+```bash
+aws s3 --recursive mv s3://alltrails-production-us-west-2-graphhopper-service/import-data s3://alltrails-production-us-west-2-graphhopper-service/default-gh
+```
+
+Restart the production deployment. The new pods will use the new data in the `default-gh` directory.
+```bash
+kubectl rollout restart deploy graphhopper-service
+```
+
+Spot check the deployment in the [production web-app](https://www.alltrails.com/api/alltrails/graphhopper-service/maps/?profile=hike&layer=OpenStreetMap).
 # Monitoring
 
 If the import fails it will notify in the #alerts-graphhopper slack channel.
