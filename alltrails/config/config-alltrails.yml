@@ -112,7 +112,7 @@ graphhopper:
   #### Elevation ####
 
   # To populate your graph with elevation data use SRTM, default is noop (no elevation). Read more about it in docs/core/elevation.md
-  # graph.elevation.provider: cgiar
+  graph.elevation.provider: cgiar
 
   # default location for cache is /tmp/srtm
   # graph.elevation.cache_dir: ./srtmprovider/
@@ -121,7 +121,7 @@ graphhopper:
   # graph.elevation.dataaccess: RAM_STORE
 
   # To enable bilinear interpolation when sampling elevation at points (default uses nearest neighbor):
-  # graph.elevation.interpolate: bilinear
+  graph.elevation.interpolate: bilinear
 
   # Reduce ascend/descend per edge without changing the maximum slope:
   # graph.elevation.edge_smoothing: ramer
