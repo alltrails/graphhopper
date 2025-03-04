@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "graphhopper-service-importer.fullname" . }}
+  labels:
+    {{- include "graphhopper-service-importer.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+        karpenter.sh/do-not-disrupt: "true"
+      labels:
+        {{- include "graphhopper-service-importer.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: karpenter.sh/capacity-type
+                    operator: NotIn
+                    values: [ "spot" ]
+      restartPolicy: Never
+      serviceAccountName: graphhopper-service
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.awsAccount }}.dkr.ecr.{{ .Values.region }}.amazonaws.com/graphhopper-service-importer:{{ include "graphhopper-service-importer.appVersion" . }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        lifecycle: 
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c" , "sleep 30"]
+        volumeMounts:
+        - mountPath: /graphhopper/data
+          name: s3-filesystem
+      volumes:
+      - name: s3-filesystem
+        persistentVolumeClaim:
+          claimName: graphhopper-service-data
+  parallelism: 1
+  backoffLimit: 0
+

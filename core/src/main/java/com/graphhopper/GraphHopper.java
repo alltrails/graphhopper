@@ -26,7 +26,6 @@ import com.graphhopper.jackson.Jackson;
 import com.graphhopper.reader.dem.*;
 import com.graphhopper.reader.osm.OSMReader;
 import com.graphhopper.reader.osm.RestrictionTagParser;
-import com.graphhopper.reader.osm.conditional.DateRangeParser;
 import com.graphhopper.routing.*;
 import com.graphhopper.routing.ch.CHPreparationHandler;
 import com.graphhopper.routing.ch.PrepareContractionHierarchies;
@@ -56,29 +55,24 @@ import com.graphhopper.util.Parameters.Landmark;
 import com.graphhopper.util.Parameters.Routing;
 import com.graphhopper.util.details.PathDetailsBuilderFactory;
 
-import com.graphhopper.AtGlobals;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
+import java.nio.file.*;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import java.util.logging.Level;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.graphhopper.util.GHUtility.readCountries;
 import static com.graphhopper.util.Helper.*;
-import static com.graphhopper.util.Parameters.Algorithms.RoundTrip;
 
 /**
  * Easy to use access point to configure import and (offline) routing.
@@ -843,10 +837,25 @@ public class GraphHopper {
 
             postProcessing(closeEarly);
             flush();
+            moveToS3();
         } finally {
             if (lock != null)
                 lock.release();
         }
+    }
+
+    protected void moveToS3() {
+        File sourceFolder = new File("/alltrails/data/import-data");
+        File[] sourceFiles = sourceFolder.listFiles();
+
+        Arrays.stream(sourceFiles).toList().forEach(file -> {
+            String fileName = file.getName();
+            try {
+                FileUtils.moveFile(file, new File("/graphhopper/data/import-data/" + fileName));
+            } catch (IOException e) {
+                logger.error("Failed to move " + fileName, e);
+            }
+        });
     }
 
     protected void prepareImport() {

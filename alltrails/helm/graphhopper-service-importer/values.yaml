@@ -1,21 +1,18 @@
 image:
   pullPolicy: Always
-  tag: "graphhopper-service"
+  tag: "graphhopper-service-importer"
 
 replicaCount: 1
 
 autoscaling:
-  enabled: true
-  minReplicas: 4
-  maxReplicas: 8
-  targetCPUUtilizationPercentage: 80
+  enabled: false
 
 resources:
   limits:
-    memory: 80G
+    memory: 350G
   requests:
-    cpu: "0.5"
-    memory: 80G
+    cpu: "1"
+    memory: 350G
 
 imagePullSecrets: []
 nameOverride: ""
@@ -35,7 +32,7 @@ ingress:
   className: ""
   annotations: {}
   hosts:
-    - host: graphhopper-service.local
+    - host: graphhopper-service-importer.local
       paths:
         - path: /
           pathType: ImplementationSpecific

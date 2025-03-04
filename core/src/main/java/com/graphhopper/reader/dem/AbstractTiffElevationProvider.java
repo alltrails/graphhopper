@@ -163,8 +163,9 @@ public abstract class AbstractTiffElevationProvider extends TileBasedElevationPr
      * Download a file at the provided url and save it as the given downloadFile if the downloadFile does not exist.
      */
     private void downloadToFile(File downloadFile, String url) throws IOException {
+        logger.info("downloading elevation file at: " + url);
         if (!downloadFile.exists()) {
-            int max = 3;
+            int max = 10;
             for (int trial = 0; trial < max; trial++) {
                 try {
                     downloader.downloadFile(url, downloadFile.getAbsolutePath());
@@ -173,6 +174,7 @@ public abstract class AbstractTiffElevationProvider extends TileBasedElevationPr
                     if (trial >= max - 1)
                         throw new RuntimeException(ex);
                     try {
+                        logger.info("RETRYING download elevation file at: " + url);
                         Thread.sleep(sleep);
                     } catch (InterruptedException ignored) {
                     }

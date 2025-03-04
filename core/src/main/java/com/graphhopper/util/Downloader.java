@@ -32,7 +32,7 @@ public class Downloader {
     private final String userAgent;
     private String referrer = "http://graphhopper.com";
     private String acceptEncoding = "gzip, deflate";
-    private int timeout = 4000;
+    private int timeout = 5000000; // downloading the elevation from cgiar can take a couple seconds to a couple minutes.
 
     public Downloader(String userAgent) {
         this.userAgent = userAgent;
