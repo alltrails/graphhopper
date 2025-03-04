@@ -9,10 +9,10 @@ autoscaling:
 
 resources:
   limits:
-    memory: 192G
+    memory: 350G
   requests:
     cpu: "1"
-    memory: 192G
+    memory: 350G
 
 imagePullSecrets: []
 nameOverride: ""
