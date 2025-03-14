@@ -68,7 +68,6 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import java.util.stream.StreamSupport;
 
 import static com.graphhopper.util.GHUtility.readCountries;
