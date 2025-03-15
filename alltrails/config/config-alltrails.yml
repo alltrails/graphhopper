@@ -31,18 +31,18 @@ graphhopper:
   # profiles (see below). Or at least limit the number of `routing.max_visited_nodes`.
 
   profiles:
-#    - name: car
-#      custom_model_files: [car.json]
-#      turn_costs:
-#        vehicle_types: [motorcar, motor_vehicle]
-#        u_turn_costs: 60
-#
-#    - name: offroad
-#      weighting: custom
-#      custom_model_files: [atv.json]
-#      turn_costs:
-#        vehicle_types: [motorcar, motor_vehicle]
-#        u_turn_costs: 60
+    - name: car
+      custom_model_files: [car.json]
+      turn_costs:
+        vehicle_types: [motorcar, motor_vehicle]
+        u_turn_costs: 60
+
+    - name: offroad
+      weighting: custom
+      custom_model_files: [atv.json]
+      turn_costs:
+        vehicle_types: [motorcar, motor_vehicle]
+        u_turn_costs: 60
 
     - name: hike
       custom_model_files: [hike.json]
@@ -65,10 +65,10 @@ graphhopper:
   # usage) and the routing will also be slower than with `turn_costs: false`.
   profiles_ch:
     - profile: hike
-#    - profile: bike
-#    - profile: mtb
-#    - profile: car
-#    - profile: offroad
+    - profile: bike
+    - profile: mtb
+    - profile: car
+    - profile: offroad
 
   # Hybrid mode:
   # Similar to speed mode, the hybrid mode (Landmarks, LM) also speeds up routing by doing calculating auxiliary data
@@ -112,7 +112,7 @@ graphhopper:
   #### Elevation ####
 
   # To populate your graph with elevation data use SRTM, default is noop (no elevation). Read more about it in docs/core/elevation.md
-#  graph.elevation.provider: cgiar
+  graph.elevation.provider: cgiar
 
   # default location for cache is /tmp/srtm
   # graph.elevation.cache_dir: ./srtmprovider/
@@ -121,7 +121,7 @@ graphhopper:
   # graph.elevation.dataaccess: RAM_STORE
 
   # To enable bilinear interpolation when sampling elevation at points (default uses nearest neighbor):
-#  graph.elevation.interpolate: bilinear
+  graph.elevation.interpolate: bilinear
 
   # Reduce ascend/descend per edge without changing the maximum slope:
   # graph.elevation.edge_smoothing: ramer

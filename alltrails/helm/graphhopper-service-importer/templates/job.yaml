@@ -13,6 +13,9 @@ spec:
       labels:
         {{- include "graphhopper-service-importer.selectorLabels" . | nindent 8 }}
     spec:
+      tolerations:
+        - key: "xlarge-only"
+          value: "true"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
