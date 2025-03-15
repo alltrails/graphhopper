@@ -148,11 +148,6 @@ Copy the imported data into production:
 aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/import-data
 ```
 
-Copy the latest AllTrails custom attributes to production:
-```bash
-aws s3 cp s3://alltrails-alpha-us-west-2-graphhopper-service/planet-latest.osm.pbf.csv s3://alltrails-production-us-west-2-graphhopper-service/planet-latest.osm.pbf.csv
-```
-
 Rename the current default-gh folder. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
 ```bash
 timestamp=$(date +%s)
