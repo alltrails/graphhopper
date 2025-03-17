@@ -23,6 +23,6 @@ EXPOSE 8989 8990
 
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8989/health || exit 1
 
-ENV JAVA_OPTS "-Xmx426g -Xms426g"
+ENV JAVA_OPTS "-Xmx416g -Xms416g"
 
 ENTRYPOINT [ "./graphhopper.sh", "-c", "alltrails/config/config-alltrails.yml", "-o", "/alltrails/data/import-data", "--import", "-i", "/graphhopper/data/planet-latest.osm.pbf" ]
