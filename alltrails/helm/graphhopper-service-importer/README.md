@@ -44,7 +44,7 @@ export AWS_PROFILE=mostpaths
 Switch your kube context to `eks-alpha` and your namespace to `alpha`:
 ```bash
 kubectl config use-context arn:aws:eks:us-west-2:873326996015:cluster/eks-alpha
-kubectl config use-context --current --namespace=alpha
+kubectl config set-context --current --namespace=alpha
 ```
 
 Copy the file from aws to our own s3 bucket. This is a large file and it can take some time.
@@ -140,7 +140,7 @@ Update aws-cli and kube to use the production account:
 ```bash
 export AWS_PROFILE=root
 kubectl config use-context arn:aws:eks:us-west-2:434355312983:cluster/alltrails-production
-kubectl config use-context --current --namespace=production
+kubectl config set-context --current --namespace=production
 ```
 
 Copy the imported data into production:
