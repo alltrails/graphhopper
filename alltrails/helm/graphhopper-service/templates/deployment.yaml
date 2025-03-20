@@ -30,6 +30,24 @@ spec:
       labels:
         {{- include "graphhopper-service.selectorLabels" . | nindent 8 }}
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 2
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: graphhopper-service
+      tolerations:
+        - key: "xlarge-only"
+          value: "true"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: karpenter.sh/nodepool
+                    operator: In
+                    values: ["xlarge"]
       serviceAccountName: graphhopper-service
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
