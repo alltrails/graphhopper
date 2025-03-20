@@ -143,20 +143,15 @@ kubectl config use-context arn:aws:eks:us-west-2:434355312983:cluster/alltrails-
 kubectl config set-context --current --namespace=production
 ```
 
-Copy the imported data into production:
-```bash
-aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/import-data
-```
-
 Rename the current default-gh folder. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
 ```bash
 timestamp=$(date +%s)
 aws s3 --recursive mv s3://alltrails-production-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/default-gh-$timestamp
 ```
 
-Rename to new data to default-gh
+Copy the imported data into production default-gh:
 ```bash
-aws s3 --recursive mv s3://alltrails-production-us-west-2-graphhopper-service/import-data s3://alltrails-production-us-west-2-graphhopper-service/default-gh
+aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/default-gh
 ```
 
 Restart the production deployment. The new pods will use the new data in the `default-gh` directory.
