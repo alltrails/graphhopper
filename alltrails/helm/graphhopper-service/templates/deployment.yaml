@@ -37,7 +37,7 @@ spec:
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: graphhopper-service
+              name: graphhopper-service
       tolerations:
         - key: "xlarge-only"
           value: "true"
