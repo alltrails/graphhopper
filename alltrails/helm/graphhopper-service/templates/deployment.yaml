@@ -4,6 +4,8 @@ metadata:
   name: {{ include "graphhopper-service.fullname" . }}
   labels:
     {{- include "graphhopper-service.labels" . | nindent 4 }}
+    tags.datadoghq.com/service: "graphhopper"
+    tags.datadoghq.com/version: "1.0"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -29,6 +31,10 @@ spec:
           }
       labels:
         {{- include "graphhopper-service.selectorLabels" . | nindent 8 }}
+        tags.datadoghq.com/service: "graphhopper"
+        tags.datadoghq.com/version: "1.0"
+        tags.datadoghq.com/env: {{ .Values.datadog.environment }}
+        admission.datadoghq.com/enabled: "true"
     spec:
       topologySpreadConstraints:
         - maxSkew: 2
@@ -77,6 +83,26 @@ spec:
         volumeMounts:
         - mountPath: /graphhopper/data
           name: s3-filesystem
+        env:
+        - name: DD_ENV
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/env']
+        - name: DD_SERVICE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/service']
+        - name: DD_VERSION
+          value: {{ include "graphhopper-service.appVersion" . }}
+        - name: DD_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: DD_LOGS_INJECTION
+          value: "true"
+        - name: DD_TRACE_SAMPLE_RATE
+          value: "1"
+
       volumes:
       - name: s3-filesystem
         persistentVolumeClaim:
