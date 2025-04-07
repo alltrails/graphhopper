@@ -38,7 +38,7 @@ spec:
     spec:
       topologySpreadConstraints:
         - maxSkew: 2
-          minDomains: 2
+          minDomains: 4
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
@@ -55,6 +55,9 @@ spec:
                   - key: karpenter.sh/nodepool
                     operator: In
                     values: ["xlarge"]
+                  - key: karpenter.sh/capacity-type
+                    operator: NotIn
+                    values: [ "spot" ]
       serviceAccountName: graphhopper-service
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
