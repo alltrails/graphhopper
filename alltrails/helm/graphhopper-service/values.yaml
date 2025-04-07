@@ -7,15 +7,15 @@ replicaCount: 1
 autoscaling:
   enabled: true
   minReplicas: 4
-  maxReplicas: 8
+  maxReplicas: 10
   targetCPUUtilizationPercentage: 80
 
 resources:
   limits:
-    memory: 192G
+    memory: 212G
   requests:
-    cpu: "0.5"
-    memory: 192G
+    cpu: 8
+    memory: 212G
 
 imagePullSecrets: []
 nameOverride: ""
