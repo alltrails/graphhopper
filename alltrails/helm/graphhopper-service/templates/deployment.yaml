@@ -37,9 +37,16 @@ spec:
         admission.datadoghq.com/enabled: "true"
     spec:
       topologySpreadConstraints:
-        - maxSkew: 2
-          minDomains: 4
+        - maxSkew: 1
+          minDomains: 2
           topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              name: graphhopper-service
+        - maxSkew: 5
+          minDomains: 2
+          topologyKey: karpenter.sh/capacity-type
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
@@ -52,12 +59,22 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: karpenter.sh/nodepool
-                    operator: In
-                    values: ["xlarge"]
-                  - key: karpenter.sh/capacity-type
-                    operator: NotIn
-                    values: [ "spot" ]
+                - key: karpenter.sh/nodepool
+                  operator: In
+                  values: [ "xlarge" ]
+          preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 20
+                preference:
+                  matchExpressions:
+                    - key: karpenter.sh/capacity-type
+                      operator: In
+                      values: [ "on-demand" ]
+              - weight: 80
+                preference:
+                  matchExpressions:
+                    - key: karpenter.sh/capacity-type
+                      operator: In
+                      values: [ "spot" ]
       serviceAccountName: graphhopper-service
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
