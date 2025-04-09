@@ -128,6 +128,7 @@ aws s3 --recursive mv s3://alltrails-alpha-us-west-2-graphhopper-service/import-
 Restart the alpha deployment. The new pods will use the new data in the `default-gh` directory.
 ```bash
 kubectl rollout restart deploy graphhopper-service
+kubectl rollout restart deploy graphhopper-service-on-demand
 ```
 
 ## Verify Alpha Deployment
@@ -157,6 +158,7 @@ aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default
 Restart the production deployment. The new pods will use the new data in the `default-gh` directory.
 ```bash
 kubectl rollout restart deploy graphhopper-service
+kubectl rollout restart deploy graphhopper-service-on-demand
 ```
 
 Spot check the deployment in the [production web-app](https://www.alltrails.com/api/alltrails/graphhopper-service/maps/?profile=hike&layer=OpenStreetMap).

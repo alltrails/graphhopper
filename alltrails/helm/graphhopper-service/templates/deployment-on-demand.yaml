@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "graphhopper-service.fullname" . }}
+  name: {{ include "graphhopper-service.fullname" . }}-on-demand
   labels:
     {{- include "graphhopper-service.labels" . | nindent 4 }}
     tags.datadoghq.com/service: "graphhopper"
@@ -36,14 +36,6 @@ spec:
         tags.datadoghq.com/env: {{ .Values.datadog.environment }}
         admission.datadoghq.com/enabled: "true"
     spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          minDomains: 2
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: DoNotSchedule
-          labelSelector:
-            matchLabels:
-              name: graphhopper-service
       tolerations:
         - key: "xlarge-only"
           value: "true"
@@ -55,13 +47,9 @@ spec:
                 - key: karpenter.sh/nodepool
                   operator: In
                   values: [ "xlarge" ]
-          preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                preference:
-                  matchExpressions:
-                    - key: karpenter.sh/capacity-type
-                      operator: In
-                      values: [ "spot" ]
+                - key: karpenter.sh/capacity-type
+                  operator: In
+                  values: [ "on-demand" ]
       serviceAccountName: graphhopper-service
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
