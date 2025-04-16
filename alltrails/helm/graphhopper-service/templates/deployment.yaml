@@ -17,6 +17,8 @@ spec:
   template:
     metadata:
       annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+        karpenter.sh/do-not-disrupt: "true"
         ad.datadoghq.com/graphhopper-service.checks: |
           {
             "openmetrics": {
@@ -55,13 +57,9 @@ spec:
                 - key: karpenter.sh/nodepool
                   operator: In
                   values: [ "xlarge" ]
-          preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                preference:
-                  matchExpressions:
-                    - key: karpenter.sh/capacity-type
-                      operator: In
-                      values: [ "spot" ]
+                - key: karpenter.sh/capacity-type
+                  operator: In
+                  values: [ "on-demand" ]
       serviceAccountName: graphhopper-service
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -77,13 +75,20 @@ spec:
           preStop:
             exec:
               command: ["/bin/sh", "-c" , "sleep 30"]
-        readinessProbe:
+        startupProbe:
           httpGet:
             path: /health
             port: 8989
-          failureThreshold: 5
-          periodSeconds: 2
-          initialDelaySeconds: 30
+          failureThreshold: 60
+          periodSeconds: 10
+          initialDelaySeconds: 120
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8989
+          failureThreshold: 6
+          periodSeconds: 10
+          initialDelaySeconds: 10
         volumeMounts:
         - mountPath: /graphhopper/data
           name: s3-filesystem
