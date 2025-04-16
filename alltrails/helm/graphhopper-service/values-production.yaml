@@ -1,8 +1,8 @@
 awsAccount: "434355312983"
 
 autoscaling:
-  minReplicas: 4
-  maxReplicas: 10
+  minReplicas: 2
+  maxReplicas: 16
 
 datadog:
   environment: production

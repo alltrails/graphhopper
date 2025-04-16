@@ -2,7 +2,7 @@ awsAccount: "873326996015"
 
 autoscaling:
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 16
 
 datadog:
   environment: alpha
