@@ -15,7 +15,7 @@ AllTrails custom GraphHopper routing service using israelhikingmap/graphhopper D
 ### Building and Running GraphHopper Java App (outside of Docker)
 
 It is useful when making changes to the Java code to be able to build and run it outside a container.
-The `mvn` build step is slow - I am sure there is a much more efficient waty to run it incrementally during development.
+The `mvn` build step is slow - I am sure there is a much more efficient way to run it incrementally during development.
 ```Bash
 # Build Java app
 cd .. # If needed, to root of `graphhopper` repo
@@ -30,7 +30,6 @@ java -Ddw.graphhopper.datareader.file=alltrails/data/california-latest.osm.pbf \
 # Run it as local server, http://localhost:8989/maps/
 java -Ddw.graphhopper.graph.location=alltrails/data/default-gh \
   -jar web/target/graphhopper-web-*.jar server alltrails/config/config-alltrails.yml
-
 ```
 
 ### Building and Running Docker Image
@@ -39,7 +38,7 @@ java -Ddw.graphhopper.graph.location=alltrails/data/default-gh \
 
 ```Bash
 cd .. # If needed, to root of `graphhopper` repo
-alltrails/scripts/build_graphhopper.sh
+make docker-build
 ```
 
 2. Run Docker container locally to import data
@@ -48,53 +47,42 @@ alltrails/scripts/build_graphhopper.sh
 Use the raw Java app above to build larger ones.
 This method also does not currently support the `datareader.at_csv` import
 
-```Bash
+First, remove the existing data if you plan to write to the same location:
+```bash
 rm -r alltrails/data/default-gh
-docker run --rm -p 8989:8989 -v ./alltrails/data:/graphhopper/data graphhopper-service --import -i /graphhopper/data/berlin-latest.osm.pbf
+```
+
+Start the import. You may optionally pass a file to import.
+```Bash
+make import-start IMPORT_FILE=/graphhopper/data/berlin-latest.osm.pbf
 ```
 
 3. Run Docker container locally as a server, http://localhost:8989/maps/
 
 ```Bash
-docker run --rm -p 8989:8989 -v ./alltrails/data:/graphhopper/data graphhopper-service --host 0.0.0.0
+make run
 ```
 
 4. Build and push Linux image to ECR:
 
+Login to docker if needed:
 ```Bash
 # Login if needed (this example is for Mostpaths)
 aws eks --region us-west-2 update-kubeconfig --name eks-alpha
 kubectl config set-context --current --namespace=alpha # no need to then add -n alpha 
 docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 873326996015.dkr.ecr.us-west-2.amazonaws.com
-
-# Build/push
-alltrails/scripts/build_and_push_alpha.sh
-# See below for restarting service with new image
 ```
 
-5. Updating the Alpha service's data
-
-Upload all 10 files from local data/default-gh folder to default-gh folder in S3 bucket https://us-west-2.console.aws.amazon.com/s3/buckets/alltrails-alpha-us-west-2-graphhopper-service?region=us-west-2&bucketType=general&prefix=default-gh/&showversions=false
-
-Then restart containers with new data (or use this after image change in ECR)
-
-```Bash
-kubectl rollout restart deploy graphhopper-service
-kubectl get pods | grep graphhopper
+Build and push. These commands take optional values for `IMAGE_TAG` and `DATA_VERISON`.
+Note that the `IMAGE_TAG` defaults to the current git hash.
+```bash
+make docker-build ENV=alpha
+make docker-push ENV=alpha
 ```
 
-6. Updating the deployment
-
-The deployment is managed by helm, but not yet in an automated pipeline.
-
-After editing the template files you can check your work with:
-```Bash
-helm template ./alltrails/helm/graphhopper-service --values "./alltrails/helm/graphhopper-service/<VALUES>.yaml" --set "region=us-west-2"
-```
-
-Then update the deployment:
-```Bash
-helm upgrade --install "graphhopper-service" alltrails/helm/graphhopper-service --namespace <NAMESPACE> --wait --timeout 10m --atomic --debug --values alltrails/helm/graphhopper-service/<VALUES>.yaml --set image.tag=graphhopper-service --set region=us-west-2
+Deploy. This command takes optional values for `IMAGE_TAG`, `KUBE_CONTEXT`, `NAMESPACE` and `VALUES`. The defaults will work for alpha
+```bash
+make deploy ENV=alpha
 ```
 
 ## Interactive map service URLs

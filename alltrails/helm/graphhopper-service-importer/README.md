@@ -28,10 +28,11 @@ There are several steps needed to complete an import:
 4. [Start the job in k8s](#start-the-job-in-k8s)
 5. [When the job is complete delete it from k8s](#delete-the-completed-job-in-k8s)
 6. [Ensure the imported files look correct](#ensure-imported-files-look-correct)
-7. [Rename the folders in s3 so new deployments will use the new data](#rename-the-s3-folders)
-8. [Restart the alpha deployment](#restart-alpha-deployment)
-9. [Spot check alpha to ensure the routing requests work as expected](#verify-alpha-deployment)
-10. [Copy the imported data to prod and repeat steps 5-7](#update-prod-data)
+7. [Rename the folders in s3](#rename-the-s3-folders)
+8. [Update the data version](#update-data-version)
+9. [Update the alpha deployment](#update-alpha-deployment)
+10. [Spot check alpha to ensure the routing requests work as expected](#verify-alpha-deployment)
+11. [Copy the imported data to prod and repeat steps 5-7](#update-prod-data)
 
 ## Copy the planet-latest.osm.pbf file from aws
 
@@ -72,13 +73,13 @@ docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 87332699
 
 Run the build script:
 ```bash
-alltrails/scripts/build_and_push_importer_alpha.sh
+make import-build
 ```
 
 ## Start the Job in K8s
 
 ```bash
-helm upgrade --install "graphhopper-service-importer" alltrails/helm/graphhopper-service-importer --namespace alpha --wait --timeout 10m --atomic --debug --values alltrails/helm/graphhopper-service-importer/values-alpha.yaml --set image.tag=graphhopper-service-importer --set region=us-west-2
+make import-start
 ```
 
 You can inspect the job with:
@@ -110,25 +111,32 @@ Ask:
 
 ## Rename the s3 Folders
 
-IMPORTANT: Do not do this while the service is actively deploying. The graphhopper-service needs to access the default-gh folder on startup. It _only_ reads from this folder on startup, so it is safe to rename when the service is running.
-
-Rename the current default-gh folder. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
+Rename the import-data. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
 ```bash
 timestamp=$(date +%s)
-aws s3 --recursive mv s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh-$timestamp
+aws s3 --recursive mv s3://alltrails-alpha-us-west-2-graphhopper-service/import-data s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh-$timestamp
 ```
 
-Rename to new data to default-gh
+## Update Data Version
+
+Update the dataversion file with the new directory
 ```bash
-aws s3 --recursive mv s3://alltrails-alpha-us-west-2-graphhopper-service/import-data s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh
+echo "default-gh-$timestamp" > ./dataversion
 ```
 
-## Restart Alpha Deployment
+Create a pull request for this change and merge to master.
+This is necessary because the new image will be tagged with the git hash.
+
+On the updated master branch, build a new image to read from the new directory
+```bash
+make docker-build ENV=alpha
+```
+
+## Update Alpha Deployment
 
 Restart the alpha deployment. The new pods will use the new data in the `default-gh` directory.
 ```bash
-kubectl rollout restart deploy graphhopper-service
-kubectl rollout restart deploy graphhopper-service-on-demand
+make deploy ENV=alpha
 ```
 
 ## Verify Alpha Deployment
@@ -144,21 +152,21 @@ kubectl config use-context arn:aws:eks:us-west-2:434355312983:cluster/alltrails-
 kubectl config set-context --current --namespace=production
 ```
 
-Rename the current default-gh folder. We mark it with a timestamp to keep older versions around until we are sure they are safe to delete.
+Docker Login:
 ```bash
-timestamp=$(date +%s)
-aws s3 --recursive mv s3://alltrails-production-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/default-gh-$timestamp
+docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 434355312983.dkr.ecr.us-west-2.amazonaws.com
 ```
 
-Copy the imported data into production default-gh:
+Copy the imported data into production directory:
 ```bash
-aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh s3://alltrails-production-us-west-2-graphhopper-service/default-gh
+aws s3 --recursive cp s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh-$timestamp s3://alltrails-production-us-west-2-graphhopper-service/default-gh-$timestamp
 ```
 
-Restart the production deployment. The new pods will use the new data in the `default-gh` directory.
+Build, push and deploy new image to production:
 ```bash
-kubectl rollout restart deploy graphhopper-service
-kubectl rollout restart deploy graphhopper-service-on-demand
+make docker-build ENV=prod
+make docker-push ENV=prod
+make deploy ENV=prod
 ```
 
 Spot check the deployment in the [production web-app](https://www.alltrails.com/api/alltrails/graphhopper-service/maps/?profile=hike&layer=OpenStreetMap).
