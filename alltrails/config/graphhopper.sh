@@ -56,7 +56,7 @@ done
 
 # Defaults
 : "${ACTION:=server}"
-: "${GRAPH:=/data/default-gh}"
+: "${GRAPH:=/graphhopper/data/$DATA_VERSION}"
 : "${CONFIG:=config-alltrails.yml}"
 : "${JAVA_OPTS:=-Xmx1g -Xms1g}"
 : "${JAR:=$(find . -type f -name "*.jar")}"

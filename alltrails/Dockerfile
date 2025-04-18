@@ -30,6 +30,12 @@ EXPOSE 8989 8990
 
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8989/health || exit 1
 
-ENV JAVA_OPTS "-Xmx156g -Xms156g -javaagent:/usr/lib/dd-java-agent.jar"
+ARG JAVA_OPTS="-Xmx156g -Xms156g -javaagent:/usr/lib/dd-java-agent.jar"
+ENV JAVA_OPTS=${JAVA_OPTS}
 
-ENTRYPOINT [ "./graphhopper.sh", "-c", "alltrails/config/config-alltrails.yml", "-o", "/graphhopper/data/default-gh" ]
+# Usually Overwritten when building the image.
+# See the dataversion file.
+ARG DATA_VERSION=default-gh
+ENV DATA_VERSION=${DATA_VERSION}
+
+ENTRYPOINT [ "./graphhopper.sh", "-c", "alltrails/config/config-alltrails.yml" ]
