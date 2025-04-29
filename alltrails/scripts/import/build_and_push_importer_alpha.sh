@@ -10,3 +10,11 @@ docker tag graphhopper-service-importer:graphhopper-service-importer 87332699601
 
 echo "Pushing graphhopper-service-importer:graphhopper-service-importer"
 docker push 873326996015.dkr.ecr.us-west-2.amazonaws.com/graphhopper-service-importer:graphhopper-service-importer
+
+# Check the exit code of the previous command
+if [ $? -ne 0 ]; then
+  echo "Docker push failed..."
+  exit 1
+fi
+
+echo "✅ Image pushed - graphhopper-service-importer:graphhopper-service-importer"
