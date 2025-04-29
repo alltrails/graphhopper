@@ -73,13 +73,13 @@ docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 87332699
 
 Run the build script:
 ```bash
-make import-build
+make import-build ENV=alpha
 ```
 
 ## Start the Job in K8s
 
 ```bash
-make import-start
+make import-start ENV=alpha
 ```
 
 You can inspect the job with:
@@ -97,7 +97,8 @@ kubectl delete job graphhopper-service-importer
 
 Inspect the current default files:
 ```bash
-aws s3 ls s3://alltrails-alpha-us-west-2-graphhopper-service/default-gh --recursive
+latest_data_version=$(head -n 1 ./dataversion)
+aws s3 ls s3://alltrails-alpha-us-west-2-graphhopper-service/$latest_data_version$> --recursive
 ```
 
 And compare these to the new files:
@@ -134,7 +135,7 @@ make docker-build ENV=alpha
 
 ## Update Alpha Deployment
 
-Restart the alpha deployment. The new pods will use the new data in the `default-gh` directory.
+Restart the alpha deployment. The new pods will use the new data in the `default-gh-$timestamp` directory.
 ```bash
 make deploy ENV=alpha
 ```
@@ -167,6 +168,15 @@ Build, push and deploy new image to production:
 make docker-build ENV=prod
 make docker-push ENV=prod
 make deploy ENV=prod
+```
+
+Repeat these steps for all regions:
+```bash
+make docker-push ENV=prod_ap
+make deploy ENV=prod_ap
+
+make docker-push ENV=prod_eu
+make deploy ENV=prod_eu
 ```
 
 Spot check the deployment in the [production web-app](https://www.alltrails.com/api/alltrails/graphhopper-service/maps/?profile=hike&layer=OpenStreetMap).

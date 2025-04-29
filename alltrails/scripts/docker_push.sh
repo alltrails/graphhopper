@@ -13,4 +13,10 @@ docker tag "${REPO_NAME}:${IMAGE_TAG}" "${ECR_URL}:${IMAGE_TAG}"
 echo "Pushing image to ECR ${ECR_URL}:${IMAGE_TAG}"
 docker push "${ECR_URL}:${IMAGE_TAG}"
 
+# Check the exit code of the previous command
+if [ $? -ne 0 ]; then
+  echo "Docker push failed..."
+  exit 1
+fi
+
 echo "✅ Image pushed - ${ECR_URL}:${IMAGE_TAG}"
