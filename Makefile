@@ -14,15 +14,55 @@ endif
 
 ifeq ($(ENV),alpha)
 ACCOUNT_ID = 873326996015
+AWS_PROFILE = mostpaths
 KUBE_CONTEXT = arn:aws:eks:us-west-2:873326996015:cluster/eks-alpha
 NAMESPACE = alpha
+REGION = us-west-2
+VALUES = alltrails/helm/graphhopper-service/values-alpha.yaml
+endif
+
+ifeq ($(ENV),alpha_ap)
+ACCOUNT_ID = 873326996015
+AWS_PROFILE = mostpaths
+KUBE_CONTEXT = arn:aws:eks:ap-southeast-2:873326996015:cluster/eks-alpha-sydney
+NAMESPACE = alpha
+REGION = ap-southeast-2
+VALUES = alltrails/helm/graphhopper-service/values-alpha.yaml
+endif
+
+ifeq ($(ENV),alpha_eu)
+ACCOUNT_ID = 873326996015
+AWS_PROFILE = mostpaths
+KUBE_CONTEXT = arn:aws:eks:eu-west-1:873326996015:cluster/eks-alpha-eu
+NAMESPACE = alpha
+REGION = eu-west-1
 VALUES = alltrails/helm/graphhopper-service/values-alpha.yaml
 endif
 
 ifeq ($(ENV),prod)
 ACCOUNT_ID = 434355312983
+AWS_PROFILE = root
 KUBE_CONTEXT = arn:aws:eks:us-west-2:434355312983:cluster/alltrails-production
 NAMESPACE = production
+REGION = us-west-2
+VALUES = alltrails/helm/graphhopper-service/values-production.yaml
+endif
+
+ifeq ($(ENV),prod_ap)
+ACCOUNT_ID = 434355312983
+AWS_PROFILE = root
+KUBE_CONTEXT = arn:aws:eks:ap-southeast-2:434355312983:cluster/eks-prod-sydney
+NAMESPACE = production
+REGION = ap-southeast-2
+VALUES = alltrails/helm/graphhopper-service/values-production.yaml
+endif
+
+ifeq ($(ENV),prod_eu)
+ACCOUNT_ID = 434355312983
+AWS_PROFILE = root
+KUBE_CONTEXT = arn:aws:eks:eu-west-1:434355312983:cluster/eks-production-eu
+NAMESPACE = production
+REGION = eu-west-1
 VALUES = alltrails/helm/graphhopper-service/values-production.yaml
 endif
 
@@ -35,12 +75,20 @@ else
 	IMAGE_TAG="${IMAGE_TAG}" DATA_VERSION="${DATA_VERSION}" ./alltrails/scripts/docker_build.sh
 endif
 
+docker-login:
+ifeq ($(ENV),dev)
+	@echo "🚫 Can't login to dev."
+else
+	@echo "Logging in to $(ENV)..."
+	AWS_PROFILE="${AWS_PROFILE}" REGION="${REGION}" ACCOUNT_ID="${ACCOUNT_ID}" ./alltrails/scripts/docker_login.sh
+endif
+
 docker-push:
 ifeq ($(ENV),dev)
 	@echo "🚫 Can't push to dev."
 else
 	@echo "Pushing to $(ENV)..."
-	IMAGE_TAG="${IMAGE_TAG}" ACCOUNT_ID="${ACCOUNT_ID}" ./alltrails/scripts/docker_push.sh
+	REGION="${REGION}" IMAGE_TAG="${IMAGE_TAG}" ACCOUNT_ID="${ACCOUNT_ID}" ./alltrails/scripts/docker_push.sh
 endif
 
 deploy:
@@ -48,7 +96,7 @@ ifeq ($(ENV),dev)
 	@echo "🚫 Can't deploy to dev."
 else
 	@echo "Deploying to $(ENV)..."
-	IMAGE_TAG="${IMAGE_TAG}" KUBE_CONTEXT="${KUBE_CONTEXT}" NAMESPACE="${NAMESPACE}" VALUES="${VALUES}" ./alltrails/scripts/deploy.sh
+	REGION="${REGION}" IMAGE_TAG="${IMAGE_TAG}" KUBE_CONTEXT="${KUBE_CONTEXT}" NAMESPACE="${NAMESPACE}" VALUES="${VALUES}" ./alltrails/scripts/deploy.sh
 endif
 
 run:
