@@ -98,7 +98,7 @@ kubectl delete job graphhopper-service-importer
 Inspect the current default files:
 ```bash
 latest_data_version=$(head -n 1 ./dataversion)
-aws s3 ls s3://alltrails-alpha-us-west-2-graphhopper-service/$latest_data_version$> --recursive
+aws s3 ls s3://alltrails-alpha-us-west-2-graphhopper-service/$latest_data_version --recursive
 ```
 
 And compare these to the new files:
@@ -128,9 +128,10 @@ echo "default-gh-$timestamp" > ./dataversion
 Create a pull request for this change and merge to master.
 This is necessary because the new image will be tagged with the git hash.
 
-On the updated master branch, build a new image to read from the new directory
+On the updated master branch, build and push a new image to read from the new directory
 ```bash
 make docker-build ENV=alpha
+make docker-push ENV=alpha
 ```
 
 ## Update Alpha Deployment
