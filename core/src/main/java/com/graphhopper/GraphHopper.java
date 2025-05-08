@@ -836,21 +836,28 @@ public class GraphHopper {
 
             postProcessing(closeEarly);
             flush();
-            moveToS3();
+
+            String s3Dir = System.getenv("S3_DIR");
+            if (s3Dir != null && !s3Dir.isEmpty()) {
+                System.out.println("Moving files to S3");
+                moveToS3(s3Dir);
+            } else {
+                System.out.println("No S3_DIR environment variable set, skipping move to S3");
+            }
         } finally {
             if (lock != null)
                 lock.release();
         }
     }
 
-    protected void moveToS3() {
+    protected void moveToS3(String s3Dir) {
         File sourceFolder = new File("/alltrails/data/import-data");
         File[] sourceFiles = sourceFolder.listFiles();
 
         Arrays.stream(sourceFiles).toList().forEach(file -> {
             String fileName = file.getName();
             try {
-                FileUtils.moveFile(file, new File("/graphhopper/data/import-data/" + fileName));
+                FileUtils.moveFile(file, new File(s3Dir + fileName));
             } catch (IOException e) {
                 logger.error("Failed to move " + fileName, e);
             }

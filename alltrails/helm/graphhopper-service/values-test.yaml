@@ -1,0 +1,17 @@
+awsAccount: "873326996015"
+
+autoscaling:
+  enabled: false
+
+datadog:
+  environment: alpha
+
+nameOverride: "graphhopper-service-test"
+fullnameOverride: "graphhopper-service-test"
+
+resources:
+  limits:
+    memory: 18G
+  requests:
+    cpu: 1
+    memory: 18G

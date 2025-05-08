@@ -73,14 +73,15 @@ kubectl config set-context --current --namespace=alpha # no need to then add -n 
 docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 873326996015.dkr.ecr.us-west-2.amazonaws.com
 ```
 
-Build and push. These commands take optional values for `IMAGE_TAG` and `DATA_VERISON`.
-Note that the `IMAGE_TAG` defaults to the current git hash.
+The following make commands for build, push and deployment are explained in depth in the [build_commands_README.md](build_commands_README.md).
+
+Build and push:
 ```bash
 make docker-build ENV=alpha
 make docker-push ENV=alpha
 ```
 
-Deploy. This command takes optional values for `IMAGE_TAG`, `KUBE_CONTEXT`, `NAMESPACE` and `VALUES`. The defaults will work for alpha
+Deploy:
 ```bash
 make deploy ENV=alpha
 ```
