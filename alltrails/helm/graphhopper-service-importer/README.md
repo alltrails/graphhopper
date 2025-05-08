@@ -71,15 +71,16 @@ Login to docker:
 docker login -u AWS -p $(aws ecr get-login-password --region us-west-2) 873326996015.dkr.ecr.us-west-2.amazonaws.com
 ```
 
-Run the build script:
+Run the build and push scripts:
 ```bash
-make import-build ENV=alpha
+make import-docker-build ENV=alpha
+make import-docker-push ENV=alpha
 ```
 
 ## Start the Job in K8s
 
 ```bash
-make import-start ENV=alpha
+make import-run ENV=alpha
 ```
 
 You can inspect the job with:
