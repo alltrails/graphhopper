@@ -12,7 +12,7 @@ helm upgrade --install "${DEPLOYMENT_NAME}" \
 alltrails/helm/graphhopper-service \
     --kube-context "${KUBE_CONTEXT}" \
     --namespace "${NAMESPACE}" \
-    --wait --timeout 10m --atomic --debug \
+    --wait --timeout 16m --atomic --debug \
     --values "${VALUES}" \
     --set image.tag="${IMAGE_TAG}" \
     --set region="${REGION}"
