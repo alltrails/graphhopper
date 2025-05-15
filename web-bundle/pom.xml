@@ -195,7 +195,7 @@
                         <configuration>
                             <target>
                                 <untar compression="gzip"
-                                       src="${basedir}/target/graphhopper-graphhopper-maps-bundle-${graphhopper-maps.version}.tgz"
+                                       src="${basedir}/alltrails/graphhopper-maps-0.7.tgz"
                                        dest="${basedir}/target/classes/com/graphhopper/maps">
                                     <patternset>
                                         <include name="package/dist/**"/>

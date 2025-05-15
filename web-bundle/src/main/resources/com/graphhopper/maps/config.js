@@ -5,7 +5,7 @@ const config = {
             ? '/api/alltrails/graphhopper-service/'
             : '/')), // Default to '/' for localhost
     geocodingApi: '',
-    defaultTiles: 'OpenStreetMap',
+    defaultTiles: 'AllTrails',
     keys: {
         graphhopper: "",
         maptiler: "missing_api_key",
@@ -17,9 +17,11 @@ const config = {
     request: {
         details: [
             'road_class',
-            'road_environment',
+            'road_access',
+            'surface',
             'max_speed',
             'average_speed',
+            'foot_access',
         ],
         snapPreventions: ['ferry'],
     },
