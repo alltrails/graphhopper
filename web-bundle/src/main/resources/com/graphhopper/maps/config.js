@@ -25,4 +25,5 @@ const config = {
         ],
         snapPreventions: ['ferry'],
     },
+    profile_group_mapping: {},
 }
