@@ -28,6 +28,7 @@ IMPORT_JOB_NAME = graphhopper-service-importer
 IMPORT_JAVA_OPTS = -Xmx416g -Xms416g
 IMPORT_S3_DIR = /graphhopper/data/import-data/
 IMPORT_FILE = /graphhopper/data/planet-latest.osm.pbf
+IMPORT_CSV = /graphhopper/data/byot_custom_routing_weights.csv
 endif
 
 ifeq ($(ENV),alpha_ap)
@@ -139,7 +140,7 @@ ifeq ($(ENV),dev)
 	./alltrails/scripts/local/build_graphhopper.sh
 else ifneq ($(filter $(ENV),alpha test),)
 	echo "Building $(ENV) image..."
-	IMAGE_TAG="${IMAGE_TAG}" IMPORT_FILE="${IMPORT_FILE}" JAVA_OPTS="${IMPORT_JAVA_OPTS}" S3_DIR="${IMPORT_S3_DIR}" ./alltrails/scripts/import/docker_build.sh
+	IMAGE_TAG="${IMAGE_TAG}" IMPORT_FILE="${IMPORT_FILE}" IMPORT_CSV="${IMPORT_CSV}" JAVA_OPTS="${IMPORT_JAVA_OPTS}" S3_DIR="${IMPORT_S3_DIR}" ./alltrails/scripts/import/docker_build.sh
 else
 	@echo "🚫 Can't run the importer in $(ENV)."
 endif

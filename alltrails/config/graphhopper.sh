@@ -24,6 +24,7 @@ function printBashUsage {
   echo ""
   echo "parameters:"
   echo "-i | --input <osm-file>   OSM local input file location"
+  echo "--csv <csv-file>           AT CSV local input file location"
   echo "--url <url>               download input file from a url and save as data.pbf"
   echo "--import                  only create the graph cache, to be used later for faster starts"
   echo "-c | --config <config>    application configuration file location"
@@ -40,6 +41,7 @@ while [ ! -z $1 ]; do
     --import) ACTION=import; shift 1;;
     -c|--config) CONFIG="$2"; shift 2;;
     -i|--input) FILE="$2"; shift 2;;
+    --csv) IMPORT_CSV_OPTS="-Ddw.graphhopper.alltrails.attributes.file=$2"; shift 2;;
     --url) URL="$2"; shift 2;;
     -o|--graph-cache) GRAPH="$2"; shift 2;;
     -p|--profiles) GH_WEB_OPTS="$GH_WEB_OPTS -Ddw.graphhopper.graph.flag_encoders=$2"; shift 2;;
@@ -71,4 +73,4 @@ mkdir -p $(dirname "${GRAPH}")
 echo "## Executing $ACTION. JAVA_OPTS=$JAVA_OPTS"
 
 exec "$JAVA" $JAVA_OPTS ${FILE:+-Ddw.graphhopper.datareader.file="$FILE"} -Ddw.graphhopper.graph.location="$GRAPH" \
-        $GH_WEB_OPTS -jar "$JAR" $ACTION $CONFIG
+        $GH_WEB_OPTS $IMPORT_CSV_OPTS -jar "$JAR" $ACTION $CONFIG
