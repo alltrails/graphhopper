@@ -170,15 +170,10 @@ public class DefaultImportRegistry implements ImportRegistry {
                     (lookup, props) -> new OSMFootwayParser(
                             lookup.getEnumEncodedValue(Footway.KEY, Footway.class))
             );
-        else if (AtPopularity.KEY.equals(name))
-            return ImportUnit.create(name, props -> AtPopularity.create(),
-                    (lookup, props) -> new AtPopularityCalculator(
-                            lookup.getDecimalEncodedValue(AtPopularity.KEY))
-            );
-        else if (AtScenicValue.KEY.equals(name))
-            return ImportUnit.create(name, props -> AtScenicValue.create(),
-                    (lookup, props) -> new AtScenicValueCalculator(
-                            lookup.getDecimalEncodedValue(AtScenicValue.KEY))
+        else if (AtAttribute.KEYS.contains(name))
+            return ImportUnit.create(name, props -> AtAttribute.create(name),
+                    (lookup, props) -> new AtAttributeCalculator(
+                            lookup.getDecimalEncodedValue(name), name)
             );
         else if (OSMWayID.KEY.equals(name))
             return ImportUnit.create(name, props -> OSMWayID.create(),

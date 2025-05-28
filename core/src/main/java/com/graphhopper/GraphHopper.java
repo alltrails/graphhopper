@@ -472,8 +472,8 @@ public class GraphHopper {
         String tmpOsmFile = ghConfig.getString("datareader.file", "");
         if (!isEmpty(tmpOsmFile)) {
             osmFile = tmpOsmFile;
-            String filename = osmFile + ".csv";
-            if (new File(filename).isFile())
+            String filename = ghConfig.getString("alltrails.attributes.file", "");
+            if (!isEmpty(filename) && (new File(filename).isFile()))
                 atCsvFile = filename;
         }
         else {

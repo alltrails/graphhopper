@@ -7,6 +7,9 @@ graphhopper:
   # Lock type
   # graph.locktype: simple
 
+  # AllTrails custom attributes file
+  alltrails.attributes.file: ""
+
 
   ##### Routing Profiles ####
 
@@ -93,7 +96,8 @@ graphhopper:
   graph.encoded_values: foot_road_access, bike_priority, bike_road_access, country, road_class, roundabout, car_access, road_access,
     car_average_speed, mtb_rating, mtb_priority, mtb_access, mtb_average_speed, racingbike_priority, racingbike_access, racingbike_average_speed,
     foot_access, hike_rating, foot_priority, foot_network, foot_average_speed, average_slope,
-    surface, smoothness, track_type, at_popularity, at_scenic_value, at_gain_percent
+    surface, smoothness, track_type, osm_way_id,
+    at_popularity, at_racingbike_popularity, at_mtb_popularity, at_other_popularity, at_scenic_value, at_gain_percent
 
   #### Speed, hybrid and flexible mode ####
 

@@ -29,7 +29,10 @@ ENV JAVA_OPTS=${JAVA_OPTS}
 ARG IMPORT_FILE="/graphhopper/data/planet-latest.osm.pbf"
 ENV IMPORT_FILE=${IMPORT_FILE}
 
+ARG IMPORT_CSV="/graphhopper/data/byot_custom_routing_weights.csv"
+ENV IMPORT_CSV=${IMPORT_CSV}
+
 ARG S3_DIR="/graphhopper/data/import-data/"
 ENV S3_DIR=${S3_DIR}
 
-ENTRYPOINT ./graphhopper.sh -c alltrails/config/config-alltrails.yml -o /alltrails/data/import-data --import -i "${IMPORT_FILE}"
+ENTRYPOINT ./graphhopper.sh -c alltrails/config/config-alltrails.yml -o /alltrails/data/import-data --import -i "${IMPORT_FILE}" --csv "${IMPORT_CSV}"

@@ -23,7 +23,7 @@ This job only needs to run in alpha. The output data is the same in all environm
 
 There are several steps needed to complete an import:
 1. [Copy the planet-latest.osm.pbf file from aws to ensure we are using the latest version](#copy-the-planet-latestosmpbf-file-from-aws)
-2. [Copy the planet-latest.osm.pbf.csv file from DSAE](#ensure-we-have-the-latest-byot_custom_routing_weightscsv)
+2. [Copy the byot_custom_routing_weights.csv file from DSAE](#ensure-we-have-the-latest-byot_custom_routing_weightscsv)
 3. [Build and push the importer image](#build-and-push-the-importer-image)
 4. [Start the job in k8s](#start-the-job-in-k8s)
 5. [When the job is complete delete it from k8s](#delete-the-completed-job-in-k8s)
@@ -56,12 +56,11 @@ aws s3 cp s3://osm-pds/planet-latest.osm.pbf s3://alltrails-alpha-us-west-2-grap
 ## Ensure we have the latest byot_custom_routing_weights.csv
 
 The `byot_custom_routing_weights.csv` is put together by DSAE and contains the AllTrails custom routing weights.
-It needs to be in the same directory as `planet-latest.osm.pbf`.
-Ensure this file exists and that it is the latest version from DSAE. Their pipeline automatically updates this file and overwrites the old one.
+It needs to be in the same directory as `planet-latest.osm.pbf` and should be called `planet-latest.osm.pbf.csv`
 
-Rename this file to `planet-latest.osm.pbf.csv`:
+If necessary rename the file last supplied by DSAE to `byot_custom_routing_weights.csv`, eg:
 ```bash
-aws s3 mv s3://alltrails-production-us-west-2-graphhopper-service/byot_custom_routing_weights.csv s3://alltrails-production-us-west-2-graphhopper-service/planet-latest.osm.pbf.csv
+aws s3 mv s3://alltrails-production-us-west-2-graphhopper-service/byot_custom_routing_weights_alpha.csv s3://alltrails-production-us-west-2-graphhopper-service/byot_custom_routing_weights.csv
 ```
 
 ## Build and Push the Importer Image
