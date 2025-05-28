@@ -39,7 +39,7 @@ There are two inputs required for building the graph:
 
 Build the importer image:
 ```bash
-make import-docker-build ENV=test IMPORT_FILE=/graphhopper/data/berlin-latest.osm.pbf IMPORT_CSV=/graphhopper/data/berlin-latest.osm.pbf.csv
+make import-docker-build ENV=test IMPORT_FILE=/graphhopper/data/berlin-latest.osm.pbf IMPORT_CSV=/graphhopper/data/byot_custom_routing_weights.csv
 ```
 
 Push the importer image to ECR:

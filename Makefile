@@ -65,6 +65,7 @@ IMPORT_JOB_NAME = graphhopper-service-importer-test
 IMPORT_JAVA_OPTS = -Xmx12g -Xms12g
 IMPORT_S3_DIR = /graphhopper/data/import-data-test/
 IMPORT_FILE = /graphhopper/data/berlin-latest.osm.pbf
+IMPORT_CSV = /graphhopper/data/byot_custom_routing_weights.csv
 endif
 
 ifeq ($(ENV),prod)
