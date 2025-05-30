@@ -14,7 +14,8 @@
     { "if": "country == DEU && road_class == BRIDLEWAY && bike_road_access != YES", "multiply_by": "0" },
     { "if": "!mtb_access && (!backward_mtb_access || roundabout)",  "multiply_by": "0" },
     { "else_if": "!mtb_access && backward_mtb_access",  "multiply_by": "0.2" },
-    { "if": "bike_road_access == PRIVATE",  "multiply_by": "0" }
+    { "if": "bike_road_access == PRIVATE",  "multiply_by": "0" },
+    { "if": "road_environment == FERRY", "multiply_by": "0.25" }
   ],
   "speed": [
     { "if": "true", "limit_to": "mtb_average_speed" },

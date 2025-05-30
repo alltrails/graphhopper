@@ -14,7 +14,8 @@
     { "if": "hike_rating > 1",  "multiply_by": "0" },
     { "if": "country == DEU && road_class == BRIDLEWAY && bike_road_access != YES", "multiply_by": "0" },
     { "if": "!racingbike_access && (!backward_racingbike_access || roundabout)",  "multiply_by": "0" },
-    { "else_if": "!racingbike_access && backward_racingbike_access",  "multiply_by": "0.2" }
+    { "else_if": "!racingbike_access && backward_racingbike_access",  "multiply_by": "0.2" },
+    { "if": "road_environment == FERRY", "multiply_by": "0.25" }
   ],
   "speed": [
     { "if": "true", "limit_to": "racingbike_average_speed" },
