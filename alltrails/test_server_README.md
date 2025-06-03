@@ -37,11 +37,9 @@ There are two inputs required for building the graph:
 1. An osm.pbf file
 2. A csv of custom weights
 
-The CSV file **must** share the same name as the OSM file with `.csv` on the end. For example, if we're using `berlin-latest.osm.pbf`, we would need a csv called `berlin-latest.osm.pbf.csv`. Both of these files need to be at the top level of the `alltrails-alpha-us-west-2-graphhopper-service` in the `mostpaths` account in `us-west-2`.
-
 Build the importer image:
 ```bash
-make import-docker-build ENV=test IMPORT_FILE=/graphhopper/data/berlin-latest.osm.pbf
+make import-docker-build ENV=test IMPORT_FILE=/graphhopper/data/berlin-latest.osm.pbf IMPORT_CSV=/graphhopper/data/byot_custom_routing_weights.csv
 ```
 
 Push the importer image to ECR:
