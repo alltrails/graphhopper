@@ -30,7 +30,7 @@ EXPOSE 8989 8990
 
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8989/health || exit 1
 
-ARG JAVA_OPTS="-Xmx156g -Xms156g -javaagent:/usr/lib/dd-java-agent.jar"
+ARG JAVA_OPTS="-Xmx161g -Xms161g -javaagent:/usr/lib/dd-java-agent.jar"
 ENV JAVA_OPTS=${JAVA_OPTS}
 
 # Usually Overwritten when building the image.
