@@ -8,7 +8,7 @@ IMAGE_TAG ?= $(GIT_HASH)
 LATEST_DATA_VERSION = $(shell head -n 1 ./dataversion)
 DATA_VERSION ?= $(LATEST_DATA_VERSION)
 
-JAVA_OPTS = -Xmx156g -Xms156g -javaagent:/usr/lib/dd-java-agent.jar
+JAVA_OPTS = -Xmx161g -Xms161g -javaagent:/usr/lib/dd-java-agent.jar
 DEPLOYMENT_NAME = graphhopper-service
 
 ifeq ($(ENV),dev)
